@@ -83,7 +83,7 @@ function findBiggestIndex(queue) {
   return biggestIndex;
 }
 
-function solveMaze() {
+function solveMaze2() {
   var queue = [[0, 0]];
 
   var pathFound = false;
@@ -178,6 +178,82 @@ function solveMaze() {
     }
   }
 }
+function solveMaze() {
+  var queue = [[0, 0]];
+
+  var pathFound = false;
+
+  var xLoc;
+  var yLoc;
+
+  function step() {
+    if (queue.length > 0 && !pathFound) {
+      var index = findBiggestIndex(queue);
+      xLoc = queue[index][0];
+      yLoc = queue[index][1];
+
+      queue.splice(index, 1);
+
+      // Check if the finish is one step away
+      if (xLoc > 0 && tiles[xLoc - 1][yLoc].state === "f") {
+        pathFound = true;
+      }
+      if (xLoc < tileColumnCount - 1 && tiles[xLoc + 1][yLoc].state === "f") {
+        pathFound = true;
+      }
+      if (yLoc > 0 && tiles[xLoc][yLoc - 1].state === "f") {
+        pathFound = true;
+      }
+      if (yLoc < tileRowCount - 1 && tiles[xLoc][yLoc + 1].state === "f") {
+        pathFound = true;
+      }
+
+      // Check for empty tiles around the current tile
+      if (xLoc > 0 && tiles[xLoc - 1][yLoc].state === "e") {
+        queue.push([xLoc - 1, yLoc]);
+        tiles[xLoc - 1][yLoc].state = tiles[xLoc][yLoc].state + "l";
+      }
+      if (xLoc < tileColumnCount - 1 && tiles[xLoc + 1][yLoc].state === "e") {
+        console.log("You can go right xloc:" + xLoc + " yloc:" + yLoc);
+        queue.push([xLoc + 1, yLoc]);
+        tiles[xLoc + 1][yLoc].state = tiles[xLoc][yLoc].state + "r";
+      }
+      if (yLoc > 0 && tiles[xLoc][yLoc - 1].state === "e") {
+        queue.push([xLoc, yLoc - 1]);
+        tiles[xLoc][yLoc - 1].state = tiles[xLoc][yLoc].state + "u";
+      }
+      if (yLoc < tileRowCount - 1 && tiles[xLoc][yLoc + 1].state === "e") {
+        queue.push([xLoc, yLoc + 1]);
+        tiles[xLoc][yLoc + 1].state = tiles[xLoc][yLoc].state + "d";
+      }
+
+      draw();
+
+      if (!pathFound) {
+        setTimeout(step, 10);
+      } else {
+        output.innerHTML = "Solved";
+        var path = tiles[xLoc][yLoc].state;
+        var pathLength = path.length;
+        var currX = 0;
+        var currY = 0;
+        for (var i = 0; i < pathLength - 1; i++) {
+          if (path.charAt(i + 1) === "u") currY -= 1;
+          if (path.charAt(i + 1) === "d") currY += 1;
+          if (path.charAt(i + 1) === "r") currX += 1;
+          if (path.charAt(i + 1) === "l") currX -= 1;
+          tiles[currX][currY].state = "x";
+        }
+        draw();
+      }
+    } else {
+      if (!pathFound) output.innerHTML = "No Solution";
+    }
+  }
+
+  // Start the first step
+  step();
+}
 function reset() {
   for (var c = 0; c < tileColumnCount; c++) {
     tiles[c] = [];
@@ -190,6 +266,24 @@ function reset() {
   output.innerHTML =
     "Draw your own maze and let the machine find the route through your maze";
 }
+
+function randomFillMaze() {
+  reset();
+
+  for (var c = 0; c < tileColumnCount; c++) {
+    for (var r = 0; r < tileRowCount; r++) {
+      if (!(c === 0 && r === 0) && !(c === tileColumnCount - 1 && r === tileRowCount - 1)) {
+        if (Math.random() < 0.3) {
+          tiles[c][r].state = "w";
+        }
+      }
+    }
+  }
+
+  draw();
+  output.innerHTML = "Random maze generated! Click 'Solve Maze' to find the path.";
+}
+
 function init() {
   canvas = document.getElementById("myCanvas");
   ctx = canvas.getContext("2d");
