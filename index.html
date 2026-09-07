@@ -1,20 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="css.css" />
-    <title>Maze Solver</title>
-  </head>
-  <body>
-    <button class="button" onclick="solveMaze()">Solve</button>
-    <button class="button" onclick="reset()">Reset</button>
-    <button class="button" onclick="randomFillMaze()">Random Fill</button>
-    <p id="outcome">
-      Draw your own maze and let the machine find the route through your maze
-    </p>
-    <canvas id="myCanvas" width="920" height="460"></canvas>
-    <script src="maze.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171a18">
+  <meta name="description" content="An interactive maze editor and pathfinding visualizer.">
+  <title>Maze Studio</title>
+  <link rel="stylesheet" href="css.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Maze Studio home"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 27V5h22v22H13V13h8v8M5 21h8M21 5v8" stroke="currentColor" stroke-width="3"/></svg>maze<span>studio</span></a>
+    <button id="export" class="export-button">Export PNG ↗</button>
+  </header>
+  <main>
+    <section class="studio" aria-label="Maze editor">
+      <div class="toolbar">
+        <div class="settings">
+          <select id="algorithm" aria-label="Algorithm"><option value="astar">A* search</option><option value="bfs">Breadth-first</option><option value="dfs">Depth-first</option><option value="dijkstra">Dijkstra</option><option value="greedy">Greedy best-first</option><option value="bidirectional">Bidirectional BFS</option></select>
+          <select id="preset" aria-label="Maze preset"><option value="corridors">Corridors</option><option value="scatter">Scattered</option><option value="blank">Blank</option></select>
+          <button id="generate" class="icon-button" title="New maze" aria-label="New maze">↻</button>
+        </div>
+        <div class="tools" role="group" aria-label="Drawing tools">
+          <button class="tool active" data-tool="wall" aria-pressed="true" title="Draw walls (W)"><i class="wall-icon"></i>Wall</button>
+          <button class="tool" data-tool="erase" aria-pressed="false" title="Erase (E)"><i class="erase-icon"></i>Erase</button>
+          <button class="tool" data-tool="start" aria-pressed="false" title="Move start (S)"><i class="start-dot"></i>Start</button>
+          <button class="tool" data-tool="finish" aria-pressed="false" title="Move finish (F)"><i class="finish-dot"></i>Finish</button>
+        </div>
+      </div>
+      <div class="board-wrap"><canvas id="myCanvas" width="1170" height="690" tabindex="0" aria-label="Maze editor. Arrow keys move the cursor. Enter applies the selected tool."></canvas></div>
+      <div class="playback">
+        <div class="run-controls"><button id="solve" class="primary"><span>▶</span> Find path</button><button id="step" class="icon-button" title="One step" aria-label="One step">▷|</button><button id="clear" class="icon-button" title="Clear path" aria-label="Clear path">↺</button></div>
+        <div class="speed-control"><label for="speed">Speed</label><input id="speed" type="range" min="1" max="5" value="2"><span id="speed-value">Steady</span></div>
+        <div class="legend"><span><i class="legend-visited"></i>Explored</span><span><i class="legend-path"></i>Path</span></div>
+      </div>
+    </section>
+    <div class="results" aria-label="Search results">
+      <strong id="outcome" role="status">Ready</strong>
+      <div class="metrics"><span><strong id="visited-count">0</strong> explored</span><span><strong id="path-count">—</strong></span><span><strong id="time-count">—</strong></span></div>
+    </div>
+    <div hidden><span id="status-detail"></span><span id="maze-name"></span><span id="algorithm-description"></span><span id="explanation"></span></div>
+  </main>
+  <script src="maze.js"></script>
+</body>
 </html>
